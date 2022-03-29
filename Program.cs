@@ -133,7 +133,7 @@ namespace OpenGL_Demo
             GL.Enable(EnableCap.CullFace);
         }
 
-        private static void Window_Render(double dt)
+        private unsafe static void Window_Render(double dt)
         {
             GL.ClearColor(0.5f, 0.5f, 0.5f, 1f);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -161,10 +161,7 @@ namespace OpenGL_Demo
             Shader.SetMatrix(uProjection, ProjMat);
 
             //GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
-            unsafe
-            {
-                GL.DrawElements(GLEnum.Triangles, (uint)Mesh.Indices.Length, DrawElementsType.UnsignedInt, null);
-            }
+            GL.DrawElements(GLEnum.Triangles, (uint)Mesh.Indices.Length, DrawElementsType.UnsignedInt, null);
         }
 
         private static void Keyboard_KeyDown(IKeyboard arg1, Key arg2, int arg3)
