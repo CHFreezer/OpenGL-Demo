@@ -20,16 +20,6 @@ namespace OpenGL_Demo
             Program.GL.BindBuffer(_bufferType, _handle);
         }
 
-        public void BindBufferBase(uint index)
-        {
-            Program.GL.BindBufferBase(_bufferType, index, _handle);
-        }
-
-        public void BindBufferRange(uint index, int offset, uint size)
-        {
-            Program.GL.BindBufferRange(_bufferType, index, _handle, offset, size);
-        }
-
         public unsafe void BufferData(Span<TDataType> data, BufferUsageARB bufferUsage = BufferUsageARB.StaticDraw)
         {
             fixed (void* d = &data[0])
