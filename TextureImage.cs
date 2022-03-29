@@ -8,15 +8,29 @@ namespace OpenGL_Demo
 {
     public class TextureImage : Texture
     {
+        static Configuration customConfig;
+
+        static TextureImage()
+        {
+            customConfig = Configuration.Default.Clone();
+            customConfig.PreferContiguousImageBuffers = true;
+        }
+
         public TextureImage(string path)
         {
             _handle = Program.GL.GenTexture();
             Bind();
-            using (var img = (Image<Rgba32>)Image.Load(path))
+
+            using (var img = Image.Load<Rgba32>(customConfig, path))
             {
                 img.Mutate(x => x.Flip(FlipMode.Vertical));
 
-                Load(img.GetPixelRowSpan(0), (uint)img.Width, (uint)img.Height);
+                if (!img.DangerousTryGetSinglePixelMemory(out var memory))
+                {
+                    throw new Exception("This can only happen with multi-GB images or when PreferContiguousImageBuffers is not set to true.");
+                }
+
+                Load(memory.Span, (uint)img.Width, (uint)img.Height);
             }
             Setup();
         }
@@ -25,11 +39,17 @@ namespace OpenGL_Demo
         {
             _handle = Program.GL.GenTexture();
             Bind();
-            using (var img = (Image<Rgba32>)Image.Load(buffer))
+
+            using (var img = Image.Load<Rgba32>(customConfig, buffer))
             {
                 img.Mutate(x => x.Flip(FlipMode.Vertical));
 
-                Load(img.GetPixelRowSpan(0), (uint)img.Width, (uint)img.Height);
+                if (!img.DangerousTryGetSinglePixelMemory(out var memory))
+                {
+                    throw new Exception("This can only happen with multi-GB images or when PreferContiguousImageBuffers is not set to true.");
+                }
+
+                Load(memory.Span, (uint)img.Width, (uint)img.Height);
             }
             Setup();
         }
@@ -38,7 +58,14 @@ namespace OpenGL_Demo
         {
             _handle = Program.GL.GenTexture();
             Bind();
-            Load(img.GetPixelRowSpan(0), (uint)img.Width, (uint)img.Height);
+
+            if (!img.DangerousTryGetSinglePixelMemory(out var memory))
+            {
+                throw new Exception("This can only happen with multi-GB images or when PreferContiguousImageBuffers is not set to true.");
+            }
+
+            Load(memory.Span, (uint)img.Width, (uint)img.Height);
+
             Setup();
         }
 
